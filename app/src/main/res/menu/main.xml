@@ -7,7 +7,7 @@
         android:orderInCategory="100"
         app:showAsAction="never" />
     <item android:id="@+id/action_2playersmode"
-        android:title="@string/playersmode2"
+        android:title="@string/positions"
         android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>

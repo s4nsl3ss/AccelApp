@@ -35,7 +35,12 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaX = 0;
     private float deltaY = 0;
     private float deltaZ = 0;
+    //Mtask ist eine runnable Class, von uns erstellt, liegt im selben package,
+    //Die Klasse lässt sich leicht mit einem Timer verbinden. (wie oft will man auslesen/Sekunde)
+    //verbunden wird sie in der Methode onResume()
     private Mtask task;
+    //Timer bestimmt wie oft pro Sekunde wir die Daten einlesen.
+    //Derweil wird nur die X-Achse eingelesen. Als Test sozusagen.
     private Timer timer;
 
     private float vibrateThreshold = 0;
@@ -93,9 +98,12 @@ public class MainActivity extends Activity implements SensorEventListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+
+            //Inputfile wird angezeigt, wenn man 2 player mode klickt
             case R.id.action_2playersmode:
                 String str = "";
                 try {
+                    //Hier wird das File eingelesen, das wir in (Mtask) task produziert haben
                     FileInputStream fin = openFileInput("accscansX.csv");
                     int c;
                     String temp = "";
@@ -105,8 +113,9 @@ public class MainActivity extends Activity implements SensorEventListener {
                 } catch (Exception e) {
                    Log.e("InputStream failed", e.toString());
                 }
+                //Dialogfenster dienst zur Ausgabe des Inputfiles
                 final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                dialog.setTitle("Title");
+                dialog.setTitle("Acceleration Dates X");
                 dialog.setMessage(str);
                 dialog.setNeutralButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
