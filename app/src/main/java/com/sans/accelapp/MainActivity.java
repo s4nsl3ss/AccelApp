@@ -14,6 +14,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Timer;
 
 // Source: http://examples.javacodegeeks.com/android/core/hardware/sensor/android-accelerometer-example/
@@ -87,21 +91,37 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-            // Handle item selection
-            switch (item.getItemId()) {
-                case R.id.action_2playersmode:
-                    final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-                    dialog.setMessage("Hello Dialog");
-                    dialog.show();
-                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-                    return true;
-                default:
-                    return super.onOptionsItemSelected(item);
-            }
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_2playersmode:
+                String str = "";
+                try {
+                    FileInputStream fin = openFileInput("accscans.csv");
+                    int c;
+                    String temp = "";
+                    while ((c = fin.read()) != -1) {
+                        str += Character.toString((char) c);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                dialog.setTitle("Title");
+                dialog.setMessage(str);
+                dialog.setNeutralButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog a1 = dialog.create();
+                a1.show();
+
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     //onResume() register the accelerometer for listening the events
