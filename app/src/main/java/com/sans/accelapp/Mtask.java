@@ -45,7 +45,7 @@ public class Mtask extends TimerTask {
             x_fullstr = "";
             }
             //bei jedem Durchlauf fuellen wir x_fullstr um eine Position
-            x_fullstr += Float.toString(x_pos);
+            x_fullstr += Float.toString(x_pos) + ";";
             //zaehlt die Durchgaenge
             ++countwrites;
         } catch(Exception e){
