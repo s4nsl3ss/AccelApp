@@ -96,14 +96,14 @@ public class MainActivity extends Activity implements SensorEventListener {
             case R.id.action_2playersmode:
                 String str = "";
                 try {
-                    FileInputStream fin = openFileInput("accscans.csv");
+                    FileInputStream fin = openFileInput("accscansX.csv");
                     int c;
                     String temp = "";
                     while ((c = fin.read()) != -1) {
                         str += Character.toString((char) c);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                   Log.e("InputStream failed", e.toString());
                 }
                 final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                 dialog.setTitle("Title");
@@ -116,9 +116,8 @@ public class MainActivity extends Activity implements SensorEventListener {
                         });
                 AlertDialog a1 = dialog.create();
                 a1.show();
+              return true;
 
-
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
