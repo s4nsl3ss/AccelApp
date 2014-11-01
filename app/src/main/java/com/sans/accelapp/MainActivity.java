@@ -1,7 +1,9 @@
 package com.sans.accelapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,10 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
-import java.io.FileOutputStream;
 import java.util.Timer;
-import java.util.TimerTask;
 
 // Source: http://examples.javacodegeeks.com/android/core/hardware/sensor/android-accelerometer-example/
 public class MainActivity extends Activity implements SensorEventListener {
@@ -32,7 +31,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaX = 0;
     private float deltaY = 0;
     private float deltaZ = 0;
-    private TimerTask task;
+    private Mtask task;
+    private Timer timer;
 
     private float vibrateThreshold = 0;
 
@@ -62,28 +62,6 @@ public class MainActivity extends Activity implements SensorEventListener {
             //initialize vibration
             v = (Vibrator) this.getSystemService(context.VIBRATOR_SERVICE);
 
-        task = new TimerTask(){
-            int countwrites = 0;
-            @Override
-            public void run(){
-                try {
-                    if(countwrites>=100){
-                        Log.i("counter done ", countwrites + "");
-                        countwrites=0;
-                    }
-
-                FileOutputStream output = openFileOutput("accscansX.csv",0);
-                String content = currentX + ";";
-                output.write(content.getBytes());
-                output.close();
-                ++countwrites;
-                } catch(Exception e){
-                    Log.e("Outputstream error ", e.toString());
-                }
-
-                }
-            };
-
     }
 
     public void initializeViews() {
@@ -109,29 +87,40 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+            // Handle item selection
+            switch (item.getItemId()) {
+                case R.id.action_2playersmode:
+                    final AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                    dialog.setMessage("Hello Dialog");
+                    dialog.show();
+                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+            }
     }
 
     //onResume() register the accelerometer for listening the events
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        new Timer().scheduleAtFixedRate(task,0,10);
+        timer= new Timer();
+        task = new Mtask(this);
+        timer.scheduleAtFixedRate(task,0,20);
     }
 
     //onPause() unregister the accelerometer for stop listening the events
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
-        if(task!=null)
+        if(task!=null) {
             task.cancel();
+            task=null;
+        }
     }
 
     @Override
@@ -188,6 +177,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     // display the current x,y,z accelerometer values
     public void displayCurrentValues() {
+        if(task!=null) {
+            task.x_pos = deltaX;
+        }
         currentX.setText(Float.toString(deltaX));
         currentY.setText(Float.toString(deltaY));
         currentZ.setText(Float.toString(deltaZ));
@@ -215,3 +207,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
 }
+
+
+
+
