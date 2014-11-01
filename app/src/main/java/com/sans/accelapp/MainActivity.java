@@ -13,6 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.io.FileOutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
+
 // Source: http://examples.javacodegeeks.com/android/core/hardware/sensor/android-accelerometer-example/
 public class MainActivity extends Activity implements SensorEventListener {
 
@@ -28,6 +32,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaX = 0;
     private float deltaY = 0;
     private float deltaZ = 0;
+    private TimerTask task;
 
     private float vibrateThreshold = 0;
 
@@ -56,6 +61,28 @@ public class MainActivity extends Activity implements SensorEventListener {
 
             //initialize vibration
             v = (Vibrator) this.getSystemService(context.VIBRATOR_SERVICE);
+
+        task = new TimerTask(){
+            int countwrites = 0;
+            @Override
+            public void run(){
+                try {
+                    if(countwrites>=100){
+                        Log.i("counter done ", countwrites + "");
+                        countwrites=0;
+                    }
+
+                FileOutputStream output = openFileOutput("accscansX.csv",0);
+                String content = currentX + ";";
+                output.write(content.getBytes());
+                output.close();
+                ++countwrites;
+                } catch(Exception e){
+                    Log.e("Outputstream error ", e.toString());
+                }
+
+                }
+            };
 
     }
 
@@ -96,12 +123,15 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        new Timer().scheduleAtFixedRate(task,0,10);
     }
 
     //onPause() unregister the accelerometer for stop listening the events
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        if(task!=null)
+            task.cancel();
     }
 
     @Override

@@ -4,5 +4,6 @@
     <string name="app_name">AccelApp</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="playersmode2">2 Players Mode</string>
 
 </resources>
